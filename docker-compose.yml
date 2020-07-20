@@ -1,0 +1,47 @@
+version: '3'
+services:
+  web:
+    build: ./nginx
+    restart: always
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - ~/Projects/projectName:/usr/share/nginx/html
+    - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/conf/conf.d:/etc/nginx/conf.d
+    networks:
+    - self_bridge
+
+  php:
+    image: alrictin/php:5.6-fpm
+    restart: always
+    volumes:
+    - ~/Projects/projectName:/var/www/html
+    networks:
+    - self_bridge
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: self_test
+    ports:
+    - "3306:3306"
+    volumes:
+    - ./mysql/data:/var/lib/mysql
+    networks:
+    - self_bridge
+
+  redis:
+    image: redis:4
+    restart: always
+    ports:
+    - "6379:6379"
+    networks:
+    - self_bridge
+
+networks:
+  self_bridge:
+    driver: bridge
